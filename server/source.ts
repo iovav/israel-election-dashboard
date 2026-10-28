@@ -67,7 +67,7 @@ export function parseResults(text: string) {
 export async function loadElection(fetcher: typeof fetch = fetch): Promise<ElectionData> {
   const response = await fetcher(SOURCE_URL, {
     signal: AbortSignal.timeout(25_000),
-    headers: { Accept: 'text/csv, application/octet-stream' },
+    headers: { Accept: 'text/csv, application/octet-stream', 'User-Agent': 'Mozilla/5.0 (compatible; knesset-26-dashboard)' },
     redirect: 'error',
   });
   if (!response.ok) throw new Error(`Official 2026 export returned HTTP ${response.status}.`);
