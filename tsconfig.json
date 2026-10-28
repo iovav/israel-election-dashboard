@@ -9,7 +9,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node", "vite/client"]
   },
-  "include": ["src", "server", "tests", "vite.config.ts"]
+  "include": ["src", "server", "scripts", "tests", "vite.config.ts"]
 }

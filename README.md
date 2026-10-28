@@ -20,6 +20,10 @@ npm start
 
 The server binds to loopback by default. `PORT` overrides port 3000. Tests: `npm test`.
 
+## GitHub Pages deployment
+
+`.github/workflows/pages.yml` publishes a static build. Every 5 minutes (and on push to `main`) it runs `npm run snapshot`, which fetches and validates the official CSV and writes `public/results.json`, then builds with `VITE_STATIC=true` so the page reads `results.json` instead of `/api/results`. If the official data cannot be fetched or validated, the job fails and the previous deployment stays online. Enable it under Settings → Pages → Source: **GitHub Actions**. Pages for private repositories requires a paid GitHub plan.
+
 ## Official data and API investigation
 
 The server reads the committee's [26th-Knesset locality CSV](https://media26.bechirot.gov.il/files/expc.csv) directly. This source responded successfully in Node on 28 October 2026 and supplied a `Last-Modified` timestamp. The [ballot-level export](https://media26.bechirot.gov.il/files/expb.csv) also responded. HTTP clients produced differing results during research, so validate access in the deployment runtime.

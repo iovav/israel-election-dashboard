@@ -6,6 +6,7 @@ import './styles.css';
 type Language = 'en' | 'he';
 type Sort = 'votes' | 'seats' | 'overflow';
 const official = 'https://media26.bechirot.gov.il/files/expc.csv';
+const STATIC_SNAPSHOT = import.meta.env.VITE_STATIC === 'true';
 const agreementSource = 'https://en.wikipedia.org/wiki/2026_Israeli_legislative_election#Surplus-vote_agreements';
 const law = 'https://he.wikisource.org/wiki/חוק_הבחירות_לכנסת#סעיף_81';
 
@@ -38,9 +39,10 @@ function App() {
     const controller = new AbortController();
     abort.current = controller;
     try {
-      const response = await fetch('/api/results', { signal: controller.signal });
+      const url = STATIC_SNAPSHOT ? `${import.meta.env.BASE_URL}results.json?t=${Date.now()}` : '/api/results';
+      const response = await fetch(url, { signal: controller.signal, cache: 'no-store' });
       if (!response.ok) {
-        const body: { detail?: string } = await response.json();
+        const body: { detail?: string } = await response.json().catch(() => ({}));
         throw new Error(body.detail ?? `HTTP ${response.status}`);
       }
       const next: ElectionData = await response.json();
@@ -79,7 +81,7 @@ function App() {
   const shown = parties.filter(p => (!onlyEligible || p.eligible) &&
     `${p.name} ${p.nameHe} ${p.id}`.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
     .sort((x, y) => (y[sort] ?? -1) - (x[sort] ?? -1) || y.votes - x.votes);
-  const stale = Boolean(data && now - Date.parse(data.fetchedAt) > 180_000);
+  const stale = Boolean(data && now - Date.parse(data.fetchedAt) > (STATIC_SNAPSHOT ? 1_200_000 : 180_000));
   const sourceOld = Boolean(data?.sourceModifiedAt && now - Date.parse(data.sourceModifiedAt) > 900_000);
   const seats = represented.flatMap(p => Array.from({ length: p.seats ?? 0 }, () => p));
   const getPartner = (p: PartyResult) => parties.find(other => other.id === p.partner);
