@@ -22,7 +22,7 @@ The server binds to loopback by default. `PORT` overrides port 3000. Tests: `npm
 
 ## GitHub Pages deployment
 
-`.github/workflows/pages.yml` publishes a static build. Every 5 minutes (and on push to `main`) it runs `npm run snapshot`, which fetches and validates the official CSV and writes `public/results.json`, then builds with `VITE_STATIC=true` so the page reads `results.json` instead of `/api/results`. If the official data cannot be fetched or validated, the job fails and the previous deployment stays online. Enable it under Settings → Pages → Source: **GitHub Actions**. Pages for private repositories requires a paid GitHub plan.
+`.github/workflows/pages.yml` publishes a static build on every push to `main` (and manually). `npm run snapshot` validates the committed official CSV `data/expc.csv` and writes `public/results.json`, then the site is built with `VITE_STATIC=true` so the page reads `results.json` instead of `/api/results`. The committee's CDN does not serve GitHub runners, so to update results, replace `data/expc.csv` with a fresh download from the official URL and push. Enable it under Settings → Pages → Source: **GitHub Actions**. Pages for private repositories requires a paid GitHub plan.
 
 ## Official data and API investigation
 
