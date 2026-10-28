@@ -29,6 +29,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Diagnose official source response
+        continue-on-error: true
+        run: curl -sS -i -m 30 -A "Mozilla/5.0" https://media26.bechirot.gov.il/files/expc.csv | head -c 1500
       - run: npm run snapshot
       - run: npm run build:pages
         env:

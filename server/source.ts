@@ -80,7 +80,13 @@ export async function loadElection(fetcher: typeof fetch = fetch): Promise<Elect
     if (!(error instanceof TypeError)) throw error;
     text = new TextDecoder('windows-1255', { fatal: true }).decode(buffer);
   }
-  const totals = parseResults(text);
+  let totals: ReturnType<typeof parseResults>;
+  try {
+    totals = parseResults(text);
+  } catch (error) {
+    const snippet = text.slice(0, 200).replace(/\s+/g, ' ');
+    throw new Error(`${error instanceof Error ? error.message : error} [HTTP ${response.status}, ${response.headers.get('content-type')}, ${buffer.byteLength} bytes, starts: "${snippet}"]`);
+  }
   const parties = Object.entries(totals.votes).map(([id, votes]) => ({
     id, votes,
     ...(partyInfo[id] ?? { name: `List ${id}`, nameHe: `רשימה ${id}`, color: '#82939b' }),
